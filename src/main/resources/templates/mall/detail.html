@@ -71,7 +71,6 @@
     </div>
 </div>
 
-<div th:replace="mall/footer::footer-fragment"></div>
 
 <!-- jQuery -->
 <script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
@@ -82,7 +81,6 @@
      * 添加到购物车
      */
     function saveToCart(id) {
-        alert("被调用");
         var goodsCount = 1;
         var data = {
             "goodsId": id,

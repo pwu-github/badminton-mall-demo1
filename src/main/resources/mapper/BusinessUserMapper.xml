@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.badminton.mall.dao.BusinessUserMapper">
+  <resultMap id="BaseResultMap" type="com.badminton.mall.entity.BusinessUser">
+    <id column="business_user_id" jdbcType="INTEGER" property="businessUserId" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="locked" jdbcType="TINYINT" property="locked" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    business_user_id, login_name, password, nick_name, locked
+  </sql>
+
+  <select id="login" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from business_user
+    where login_name = #{userName,jdbcType=VARCHAR} AND password=#{password,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.badminton.mall.entity.BusinessUser">
+    insert into business_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="businessUserId != null">
+        business_user_id,
+      </if>
+      <if test="loginName != null">
+        login_name,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="nickName != null">
+        nick_name,
+      </if>
+      <if test="locked != null">
+        locked,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="businessUserId != null">
+        #{businessUserId,jdbcType=INTEGER},
+      </if>
+      <if test="loginName != null">
+        #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null">
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="locked != null">
+        #{locked,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectByLoginName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from business_user
+    where login_name = #{loginName} and locked = 0
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from business_user
+    where business_user_id = #{loginUserId,jdbcType=INTEGER}
+  </select>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.badminton.mall.entity.BusinessUser">
+    update business_user
+    <set>
+      <if test="loginName != null">
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null">
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="locked != null">
+        locked = #{locked,jdbcType=TINYINT},
+      </if>
+    </set>
+    where business_user_id = #{businessUserId,jdbcType=INTEGER}
+  </update>
+
+  <select id="findMallUserList" parameterType="Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from business_user
+    where 1=1
+    <if test="loginName!=null and loginName!=''">
+      and login_name = #{loginName}
+    </if>
+    order by create_time desc
+    <if test="start!=null and limit!=null">
+      limit #{start},#{limit}
+    </if>
+  </select>
+
+  <select id="getTotalMallUsers" parameterType="Map" resultType="int">
+    select count(*) from business_user
+    where 1=1
+    <if test="loginName!=null and loginName!=''">
+      and login_name = #{loginName}
+    </if>
+  </select>
+
+  <update id="lockUserBatch">
+    update business_user
+    set locked=#{lockStatus} where business_user_id in
+    <foreach item="id" collection="ids" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </update>
+
+</mapper>
